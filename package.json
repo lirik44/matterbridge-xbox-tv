@@ -1,0 +1,74 @@
+{
+  "name": "matterbridge-xbox-tv",
+  "version": "0.1.0",
+  "description": "Matterbridge plugin for Xbox game consoles: power, games and apps, volume, buttons and sensors over the local SmartGlass protocol and the Xbox Live Web API",
+  "author": "https://github.com/lirik44",
+  "homepage": "https://github.com/lirik44/matterbridge-xbox-tv/blob/main/README.md",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/module.js",
+  "types": "dist/module.d.ts",
+  "engines": {
+    "node": ">=20.0.0",
+    "matterbridge": ">=3.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lirik44/matterbridge-xbox-tv.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lirik44/matterbridge-xbox-tv/issues"
+  },
+  "keywords": [
+    "xbox",
+    "xboxone",
+    "xbox-series-x",
+    "microsoft",
+    "smartglass",
+    "matterbridge",
+    "plugin",
+    "matter",
+    "matterprotocol",
+    "iot",
+    "smarthome",
+    "homekit",
+    "apple-home",
+    "google-home",
+    "alexa",
+    "homeassistant"
+  ],
+  "scripts": {
+    "start": "matterbridge",
+    "build": "tsc",
+    "buildProduction": "tsc --project tsconfig.production.json",
+    "cleanBuild": "npx shx rm -rf tsconfig.tsbuildinfo dist && npm run build",
+    "watch": "tsc --watch",
+    "lint": "eslint --max-warnings=0 .",
+    "lint:fix": "eslint --fix --max-warnings=0 .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "matterbridge:add": "matterbridge -add .",
+    "matterbridge:remove": "matterbridge -remove .",
+    "matterbridge:enable": "matterbridge -enable .",
+    "matterbridge:disable": "matterbridge -disable .",
+    "matterbridge:list": "matterbridge -list",
+    "dev:link": "npm link matterbridge",
+    "dev:matterbridge": "npm install matterbridge --no-save"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "24.13.3",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsdoc": "^64.2.1",
+    "eslint-plugin-n": "^18.3.0",
+    "eslint-plugin-prettier": "5.5.6",
+    "eslint-plugin-promise": "^7.3.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "3.9.6",
+    "shx": "0.4.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "8.67.0"
+  }
+}

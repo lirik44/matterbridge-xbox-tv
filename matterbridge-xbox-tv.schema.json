@@ -1,0 +1,396 @@
+{
+  "title": "Matterbridge Xbox TV",
+  "description": "Xbox consoles over Matter: power, games and apps, volume, buttons and sensors",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "Plugin name",
+      "type": "string",
+      "readOnly": true,
+      "ui:widget": "hidden"
+    },
+    "type": {
+      "description": "Plugin type",
+      "type": "string",
+      "readOnly": true,
+      "ui:widget": "hidden"
+    },
+    "devices": {
+      "description": "The Xbox consoles to expose over Matter.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The name shown in the controller app, e.g. XBOX.",
+            "type": "string"
+          },
+          "host": {
+            "description": "The console IP address. Give it a static lease on your router.",
+            "type": "string"
+          },
+          "xboxLiveId": {
+            "description": "The Xbox Live device id, sixteen hexadecimal digits. On the console: Settings, System, Console info, \"Xbox network device ID\".",
+            "type": "string"
+          },
+          "deviceEnabled": {
+            "description": "Expose this console.",
+            "type": "boolean",
+            "default": true
+          },
+          "heartBeatInterval": {
+            "description": "How often the console is looked for over the local network while no session is open, in seconds.",
+            "type": "number",
+            "default": 6
+          },
+          "webApi": {
+            "description": "The connection to Xbox Live. Everything but power and state goes through it: starting a game, pressing a key, changing the volume.",
+            "type": "object",
+            "properties": {
+              "enable": {
+                "description": "Reach the console through Microsoft as well as over the local network.",
+                "type": "boolean",
+                "default": true
+              },
+              "token": {
+                "description": "The authorization code, or the whole callback address it is part of. Used once, after which the plugin keeps its own token chain. The plugin logs the address to open when it needs one.",
+                "type": "string"
+              },
+              "tokensFile": {
+                "description": "A homebridge-xbox-tv token file to take the authorization over from, e.g. /var/lib/homebridge/xboxTv/authToken_19216811172. Read once; nothing is written back to it.",
+                "type": "string"
+              },
+              "clientId": {
+                "description": "A Microsoft OAuth client of your own, instead of the one built into the plugin.",
+                "type": "string"
+              },
+              "clientSecret": {
+                "description": "The secret of that client, for one registered as confidential.",
+                "type": "string"
+              },
+              "pollInterval": {
+                "description": "How often the console state is read from Microsoft, in seconds. Power and the running game come from the local network in seconds; this is for the playback state and the model. Microsoft throttles a client that asks too often.",
+                "type": "number",
+                "default": 300
+              }
+            }
+          },
+          "power": {
+            "description": "The power switch.",
+            "type": "object",
+            "properties": {
+              "displayType": {
+                "description": "How the power switch is presented.",
+                "type": "string",
+                "oneOf": [
+                  { "title": "Outlet", "enum": ["outlet"] },
+                  { "title": "Light", "enum": ["light"] },
+                  { "title": "Not exposed", "enum": ["none"] }
+                ],
+                "default": "outlet"
+              }
+            }
+          },
+          "inputs": {
+            "description": "The games and apps exposed as switches. Turning one on starts it and turns the others off.",
+            "type": "object",
+            "properties": {
+              "getFromDevice": {
+                "description": "Read the games and apps from the console instead of taking them from the list below. Needs the Web API.",
+                "type": "boolean",
+                "default": false
+              },
+              "filterGames": {
+                "description": "Leave games out of the list.",
+                "type": "boolean",
+                "default": false
+              },
+              "filterApps": {
+                "description": "Leave apps out of the list.",
+                "type": "boolean",
+                "default": false
+              },
+              "filterSystemApps": {
+                "description": "Leave the apps the console uses internally out of the list.",
+                "type": "boolean",
+                "default": false
+              },
+              "filterDlc": {
+                "description": "Leave downloadable content out of the list.",
+                "type": "boolean",
+                "default": false
+              },
+              "maxCount": {
+                "description": "At most this many games and apps are exposed. Every one is a device of its own in the controller app, and Alexa stops at 50 bridged devices.",
+                "type": "number",
+                "default": 20
+              },
+              "displayType": {
+                "description": "How the game and app switches are presented.",
+                "type": "string",
+                "oneOf": [
+                  { "title": "Outlet", "enum": ["outlet"] },
+                  { "title": "Light", "enum": ["light"] },
+                  { "title": "Not exposed", "enum": ["none"] }
+                ],
+                "default": "outlet"
+              },
+              "data": {
+                "description": "The games and apps to expose, on top of the ones every console has (dashboard, settings, guide, screen saver and the rest).",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "description": "The name shown in the controller app, e.g. Sea of Thieves.",
+                      "type": "string"
+                    },
+                    "reference": {
+                      "description": "The AUMID, e.g. Microsoft.SeaofThieves_8wekyb3d8bbwe!Game. This is what the console reports as the running title, so it is what makes the switch turn itself on.",
+                      "type": "string"
+                    },
+                    "oneStoreProductId": {
+                      "description": "The product id, e.g. 9PGW18NPBZV5. This is what a launch command takes, so without it the switch can show the game but not start it.",
+                      "type": "string"
+                    },
+                    "titleId": {
+                      "description": "The numeric title id, which is a second way of recognizing the running game.",
+                      "type": "string"
+                    },
+                    "contentType": {
+                      "description": "What it is, for the filters above.",
+                      "type": "string",
+                      "oneOf": [
+                        { "title": "Game", "enum": ["Game"] },
+                        { "title": "App", "enum": ["App"] },
+                        { "title": "System app", "enum": ["System App"] },
+                        { "title": "Downloadable content", "enum": ["Dlc"] }
+                      ]
+                    }
+                  },
+                  "required": ["name"]
+                }
+              }
+            }
+          },
+          "volume": {
+            "description": "The volume of whatever the console is plugged into, which it controls over HDMI-CEC or infrared.",
+            "type": "object",
+            "properties": {
+              "displayType": {
+                "description": "How the volume is presented. The console reports no volume of its own and takes no absolute one, so the slider position is a number the plugin keeps and moving it sends that many steps.",
+                "type": "string",
+                "oneOf": [
+                  { "title": "Not exposed", "enum": ["none"] },
+                  { "title": "Light with a slider", "enum": ["light"] },
+                  { "title": "Fan with a slider", "enum": ["fan"] }
+                ],
+                "default": "none"
+              },
+              "name": {
+                "description": "The name of the volume device.",
+                "type": "string",
+                "default": "Volume"
+              },
+              "namePrefix": {
+                "description": "Prefix the name with the console name.",
+                "type": "boolean",
+                "default": false
+              },
+              "step": {
+                "description": "How many percent of the slider one step of the console is worth. At the default, moving the slider by 25% sends five steps.",
+                "type": "number",
+                "default": 5
+              }
+            }
+          },
+          "buttons": {
+            "description": "Momentary switches, each firing one key press or command. Each turns itself off again a second later.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "The name shown in the controller app, e.g. Restart XBOX.",
+                  "type": "string"
+                },
+                "displayType": {
+                  "description": "How the button is presented.",
+                  "type": "string",
+                  "oneOf": [
+                    { "title": "Outlet", "enum": ["outlet"] },
+                    { "title": "Light", "enum": ["light"] },
+                    { "title": "Not exposed", "enum": ["none"] }
+                  ],
+                  "default": "outlet"
+                },
+                "mode": {
+                  "description": "What kind of command the button fires. The field below that matches the mode is the one that is read.",
+                  "type": "integer",
+                  "oneOf": [
+                    { "title": "Media key", "enum": [0] },
+                    { "title": "Gamepad key", "enum": [1] },
+                    { "title": "TV remote key", "enum": [2] },
+                    { "title": "Console command", "enum": [3] },
+                    { "title": "Game or app", "enum": [4] }
+                  ],
+                  "default": 1
+                },
+                "mediaCommand": {
+                  "description": "The media key, for mode Media key.",
+                  "type": "string",
+                  "oneOf": [
+                    { "title": "Play", "enum": ["play"] },
+                    { "title": "Pause", "enum": ["pause"] },
+                    { "title": "Play / pause", "enum": ["playPause"] },
+                    { "title": "Stop", "enum": ["stop"] },
+                    { "title": "Record", "enum": ["record"] },
+                    { "title": "Next track", "enum": ["nextTrack"] },
+                    { "title": "Previous track", "enum": ["prevTrack"] },
+                    { "title": "Fast forward", "enum": ["fastForward"] },
+                    { "title": "Rewind", "enum": ["rewind"] },
+                    { "title": "Channel up", "enum": ["channelUp"] },
+                    { "title": "Channel down", "enum": ["channelDown"] },
+                    { "title": "Back", "enum": ["back"] },
+                    { "title": "View", "enum": ["view"] },
+                    { "title": "Menu", "enum": ["menu"] }
+                  ]
+                },
+                "gamePadCommand": {
+                  "description": "The gamepad key, for mode Gamepad key.",
+                  "type": "string",
+                  "oneOf": [
+                    { "title": "Nexus (the Xbox button)", "enum": ["nexus"] },
+                    { "title": "View", "enum": ["view"] },
+                    { "title": "Menu", "enum": ["menu"] },
+                    { "title": "A", "enum": ["a"] },
+                    { "title": "B", "enum": ["b"] },
+                    { "title": "X", "enum": ["x"] },
+                    { "title": "Y", "enum": ["y"] },
+                    { "title": "Up", "enum": ["up"] },
+                    { "title": "Down", "enum": ["down"] },
+                    { "title": "Left", "enum": ["left"] },
+                    { "title": "Right", "enum": ["right"] }
+                  ]
+                },
+                "tvRemoteCommand": {
+                  "description": "The TV remote key, for mode TV remote key.",
+                  "type": "string",
+                  "oneOf": [
+                    { "title": "Volume up", "enum": ["volUp"] },
+                    { "title": "Volume down", "enum": ["volDown"] },
+                    { "title": "Mute", "enum": ["volMute"] }
+                  ]
+                },
+                "consoleControlCommand": {
+                  "description": "What the console itself should do, for mode Console command. Recording a clip is the one command that also works with the Web API turned off, but it needs a local session opened with an Xbox Live token.",
+                  "type": "string",
+                  "oneOf": [
+                    { "title": "Restart the console", "enum": ["reboot"] },
+                    { "title": "Record the last minute of play", "enum": ["recordGameDvr"] }
+                  ]
+                },
+                "gameAppControlCommand": {
+                  "description": "The product id of the game or app to start, for mode Game or app.",
+                  "type": "string"
+                },
+                "namePrefix": {
+                  "description": "Prefix the name with the console name.",
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": ["name"]
+            }
+          },
+          "sensors": {
+            "description": "Sensors reflecting parts of the console state, for automations.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "The name shown in the controller app, e.g. Xbox playing.",
+                  "type": "string"
+                },
+                "displayType": {
+                  "description": "How the sensor is presented. Matter has no motion sensor, so occupancy is what a controller shows for one.",
+                  "type": "string",
+                  "oneOf": [
+                    { "title": "Occupancy sensor", "enum": ["occupancy"] },
+                    { "title": "Contact sensor", "enum": ["contact"] },
+                    { "title": "Not exposed", "enum": ["none"] }
+                  ],
+                  "default": "occupancy"
+                },
+                "mode": {
+                  "description": "What the sensor watches.",
+                  "type": "integer",
+                  "oneOf": [
+                    { "title": "A particular game or app", "enum": [0] },
+                    { "title": "Power", "enum": [1] },
+                    { "title": "Volume", "enum": [2] },
+                    { "title": "Mute", "enum": [3] },
+                    { "title": "Screen saver", "enum": [4] },
+                    { "title": "Playing", "enum": [5] }
+                  ],
+                  "default": 1
+                },
+                "reference": {
+                  "description": "The AUMID the sensor triggers on, for the game and app mode.",
+                  "type": "string"
+                },
+                "level": {
+                  "description": "The volume the sensor triggers on, for the volume mode.",
+                  "type": "number"
+                },
+                "pulse": {
+                  "description": "Report for half a second on every change of what is watched, rather than for as long as the condition holds.",
+                  "type": "boolean",
+                  "default": false
+                },
+                "namePrefix": {
+                  "description": "Prefix the name with the console name.",
+                  "type": "boolean",
+                  "default": false
+                }
+              },
+              "required": ["name"]
+            }
+          },
+          "debug": {
+            "description": "Log everything this console does, including every packet.",
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": ["name", "host", "xboxLiveId"]
+      }
+    },
+    "whiteList": {
+      "description": "Only expose the consoles named here. Leave empty to expose all of them.",
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "selectFrom": "name"
+    },
+    "blackList": {
+      "description": "Never expose the consoles named here.",
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "selectFrom": "name"
+    },
+    "debug": {
+      "description": "Log everything the plugin does.",
+      "type": "boolean",
+      "default": false
+    },
+    "unregisterOnShutdown": {
+      "description": "Remove every exposed device when the plugin stops. For development only.",
+      "type": "boolean",
+      "default": false,
+      "ui:widget": "hidden"
+    }
+  }
+}

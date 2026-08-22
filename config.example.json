@@ -1,0 +1,115 @@
+{
+  "name": "matterbridge-xbox-tv",
+  "type": "DynamicPlatform",
+  "debug": false,
+  "unregisterOnShutdown": false,
+  "devices": [
+    {
+      "name": "XBOX",
+      "host": "192.168.1.172",
+      "xboxLiveId": "F4000E3B77208078",
+      "webApi": {
+        "enable": true,
+        "token": "PASTE THE AUTHORIZATION CODE HERE ONCE",
+        "pollInterval": 300
+      },
+      "power": {
+        "displayType": "outlet"
+      },
+      "inputs": {
+        "getFromDevice": false,
+        "filterSystemApps": false,
+        "displayType": "outlet",
+        "maxCount": 20,
+        "data": []
+      },
+      "volume": {
+        "displayType": "none"
+      },
+      "buttons": [
+        {
+          "name": "Restart XBOX",
+          "displayType": "outlet",
+          "mode": 3,
+          "consoleControlCommand": "reboot",
+          "namePrefix": false
+        }
+      ],
+      "sensors": [],
+      "debug": false
+    },
+    {
+      "name": "Xbox Series X",
+      "host": "192.168.1.180",
+      "xboxLiveId": "FD00112233445566",
+      "webApi": {
+        "enable": true,
+        "tokensFile": "/var/lib/homebridge/xboxTv/authToken_192168118",
+        "pollInterval": 300
+      },
+      "power": {
+        "displayType": "outlet"
+      },
+      "inputs": {
+        "getFromDevice": true,
+        "filterApps": false,
+        "filterSystemApps": true,
+        "filterDlc": true,
+        "displayType": "outlet",
+        "maxCount": 15
+      },
+      "volume": {
+        "displayType": "fan",
+        "name": "Volume",
+        "namePrefix": true,
+        "step": 5
+      },
+      "buttons": [
+        {
+          "name": "Xbox button",
+          "displayType": "outlet",
+          "mode": 1,
+          "gamePadCommand": "nexus"
+        },
+        {
+          "name": "Record that",
+          "displayType": "outlet",
+          "mode": 3,
+          "consoleControlCommand": "recordGameDvr"
+        },
+        {
+          "name": "Sea of Thieves",
+          "displayType": "outlet",
+          "mode": 4,
+          "gameAppControlCommand": "9PGW18NPBZV5"
+        }
+      ],
+      "sensors": [
+        {
+          "name": "Xbox on",
+          "displayType": "occupancy",
+          "mode": 1
+        },
+        {
+          "name": "Xbox playing",
+          "displayType": "occupancy",
+          "mode": 5
+        },
+        {
+          "name": "Screen saver",
+          "displayType": "contact",
+          "mode": 4
+        },
+        {
+          "name": "Game changed",
+          "displayType": "occupancy",
+          "mode": 0,
+          "pulse": true
+        }
+      ],
+      "debug": false
+    }
+  ],
+  "whiteList": [],
+  "blackList": []
+}
